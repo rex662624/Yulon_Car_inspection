@@ -1336,9 +1336,9 @@
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>310</y>
-      <width>131</width>
-      <height>51</height>
+      <y>220</y>
+      <width>331</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
@@ -1356,10 +1356,10 @@
    <widget class="QPushButton" name="pushButton_2">
     <property name="geometry">
      <rect>
-      <x>240</x>
-      <y>310</y>
-      <width>131</width>
-      <height>51</height>
+      <x>40</x>
+      <y>270</y>
+      <width>331</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
@@ -1605,7 +1605,7 @@
       <x>0</x>
       <y>0</y>
       <width>1600</width>
-      <height>90</height>
+      <height>900</height>
      </rect>
     </property>
     <property name="text">
@@ -1637,14 +1637,35 @@
    <widget class="QLabel" name="label_11">
     <property name="geometry">
      <rect>
-      <x>440</x>
-      <y>130</y>
-      <width>771</width>
-      <height>701</height>
+      <x>420</x>
+      <y>140</y>
+      <width>821</width>
+      <height>682</height>
      </rect>
     </property>
     <property name="text">
      <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_6">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>320</y>
+      <width>331</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>微軟正黑體</family>
+      <pointsize>16</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>登入紀錄</string>
     </property>
    </widget>
    <zorder>label_9</zorder>
@@ -1662,6 +1683,7 @@
    <zorder>verticalLayoutWidget_2</zorder>
    <zorder>label_10</zorder>
    <zorder>label_11</zorder>
+   <zorder>pushButton_6</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

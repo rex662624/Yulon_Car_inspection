@@ -131,4 +131,5 @@ dmypy.json
 #========================
 *jpg
 *mp4
-yolact/*
+yolact
+1/
