@@ -200,11 +200,11 @@ class Main(QMainWindow, mainui.Ui_MainWindow):
             self.Save_video.write(frame)
             
             #print(self.already_detection_time)
-            if(self.already_detection_time == 5 and self.saved_status == 0):
+            if(self.already_detection_time == 25 and self.saved_status == 0):
                 self.saved_status = 1
                 print("Save Front Inspection Result")
                 self.__Save_Inspection_Result(frame,1)
-            elif(self.already_detection_time == 10 and self.saved_status == 1):
+            elif(self.already_detection_time == 40 and self.saved_status == 1):
                 self.saved_status = 0
                 print("Save Back Inspection Result")
                 self.__Save_Inspection_Result(frame,0)
