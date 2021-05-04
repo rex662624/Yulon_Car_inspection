@@ -1524,9 +1524,9 @@
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
-      <x>1370</x>
-      <y>300</y>
-      <width>131</width>
+      <x>1340</x>
+      <y>310</y>
+      <width>191</width>
       <height>40</height>
      </rect>
     </property>
@@ -1539,7 +1539,7 @@
      </font>
     </property>
     <property name="text">
-     <string>現在時間</string>
+     <string>檢測時間統計</string>
     </property>
    </widget>
    <widget class="QWidget" name="verticalLayoutWidget_2">
@@ -1547,7 +1547,7 @@
      <rect>
       <x>1280</x>
       <y>640</y>
-      <width>221</width>
+      <width>311</width>
       <height>161</height>
      </rect>
     </property>
@@ -1643,8 +1643,19 @@
       <height>682</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>微軟正黑體</family>
+      <pointsize>16</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
     <property name="text">
      <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_6">
@@ -1671,8 +1682,8 @@
    <widget class="QLabel" name="label_12">
     <property name="geometry">
      <rect>
-      <x>1330</x>
-      <y>340</y>
+      <x>570</x>
+      <y>30</y>
       <width>211</width>
       <height>61</height>
      </rect>
@@ -1734,6 +1745,30 @@
      <string>設定</string>
     </property>
    </widget>
+   <widget class="QLabel" name="label_14">
+    <property name="geometry">
+     <rect>
+      <x>1300</x>
+      <y>370</y>
+      <width>281</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>微軟正黑體</family>
+      <pointsize>16</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
    <zorder>label_9</zorder>
    <zorder>gridLayoutWidget</zorder>
    <zorder>pushButton</zorder>
@@ -1752,6 +1787,7 @@
    <zorder>label_12</zorder>
    <zorder>label_13</zorder>
    <zorder>pushButton_7</zorder>
+   <zorder>label_14</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
