@@ -1400,7 +1400,7 @@
      <rect>
       <x>810</x>
       <y>30</y>
-      <width>141</width>
+      <width>281</width>
       <height>61</height>
      </rect>
     </property>
@@ -1413,7 +1413,7 @@
      </font>
     </property>
     <property name="text">
-     <string>檢測畫面</string>
+     <string>汽車手勢檢點系統</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_3">

@@ -1,0 +1,30 @@
+
+
+    def showImage(self, img, label):
+        height, width, channel = img.shape
+        bytesPerline = 3 * width
+        qImg = QtGui.QImage(img.data, width, height, bytesPerline, QtGui.QImage.Format_RGB888).rgbSwapped()
+        label.setPixmap(QtGui.QPixmap.fromImage(qImg))  
+
+    def show_result(self, foldername,index):
+        _translate = QtCore.QCoreApplication.translate
+        CarFolderName = foldername+'\\Car_{}'.format(index)
+        front_img = cv2.imread(CarFolderName+'\\front_{}.jpg'.format(index),cv2.IMREAD_COLOR)
+        back_img = cv2.imread(CarFolderName+'\\back_{}.jpg'.format(index),cv2.IMREAD_COLOR)       
+        self.showImage(front_img, self.label_3)
+        self.showImage(back_img, self.label_4)
+
+        log = open(CarFolderName+"\\log.txt", "r")
+        scorelist = log.read().split("\n")
+        self.label_6.setText(QtCore.QCoreApplication.translate("MainWindow", "前門分數: {}/50".format(scorelist[0])))
+        self.label_5.setText(QtCore.QCoreApplication.translate("MainWindow", "後門分數: {}/50".format(scorelist[1])))
+        self.label_8.setText(_translate("MainWindow", "總分{}/100".format(int(scorelist[0]) + int(scorelist[1]))))
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.label.setText(_translate("MainWindow", "前車門檢測圖"))
+        self.label_2.setText(_translate("MainWindow", "後車門檢測圖"))
+        self.label_5.setText(_translate("MainWindow", "分數"))
+        self.label_6.setText(_translate("MainWindow", "分數"))
+        self.label_8.setText(_translate("MainWindow", "總分"))

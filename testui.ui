@@ -1413,7 +1413,7 @@
      </font>
     </property>
     <property name="text">
-     <string>檢測畫面</string>
+     <string>汽車手勢檢點系統</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_3">
