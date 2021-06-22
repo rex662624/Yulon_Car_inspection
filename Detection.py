@@ -89,7 +89,7 @@ class Detection(object):
         #各個part的檢測點儲存:
         self.Window_H_InspectionPt = [[False, (0,0), 0] for i in range(12)]
         self.Window_V_InspectionPt = [[False, (0,0), 0] for i in range(10)]
-        self.Outer_Contour_InspectionPt = [[False, (0,0), 0] for i in range(36)]
+        self.Outer_Contour_InspectionPt = [[False, (0,0), 0] for i in range(25)]
         self.NowScore = 0
 
     def __bottom_line(self, x):
@@ -387,7 +387,8 @@ class Detection(object):
             # 77    # 136    # 201    # 252    # 299    # 334    # 362    # 393            
             #先看看觸發新的點col了沒
             #Now position - Start Position
-            if((self.Find_Front[1]-self.Find_Front[5]) >self.IntervalAcc and self.ColCount<self.Number_of_Inspectionpt_Line and (self.Find_Front[1]-self.Find_Front[5])<500 ):
+            #(self.Find_Front[1]-self.Find_Front[5])
+            while((self.Find_Front[1]-self.Find_Front[5]) >self.IntervalAcc and self.ColCount<self.Number_of_Inspectionpt_Line and (self.Find_Front[1]-self.Find_Front[5])<500 ):
                 #self.Interval -=15 # initilize: 110         
                 self.IntervalAcc+=self.Interval
                 #print("===",IntervalAcc)
@@ -566,7 +567,7 @@ class Detection(object):
         if(self.Inspection_pt[1][0]==True):#從第二個column出現開始灑點
             #灑第一個column的直線
             if(self.Inspection_pt[0][0]==True):
-                number_of_pt = 5
+                number_of_pt = 4
                 interval_now = (self.line_list[i][1][1]-self.line_list[i][0][1])/(number_of_pt)
                 for j in range(number_of_pt):
                     #cv2.circle(new_image, (self.line_list[i][0][0], int(self.line_list[i][0][1]+interval_now*j)), 4 ,(150, 150, 150), -1)
@@ -578,7 +579,7 @@ class Detection(object):
 
 
                 if(self.Inspection_pt[i][0]==True):
-                    number_of_pt = 3
+                    number_of_pt = 2
                     interval_x_top_now = (self.line_list[i-1][0][0] - self.line_list[i][0][0])/(number_of_pt)
                     interval_y_top_now = (self.line_list[i-1][0][1] - self.line_list[i][0][1])/(number_of_pt)
 
@@ -600,7 +601,7 @@ class Detection(object):
                             
             #最後一個Column
             if(self.Find_Back[0] == True):
-                number_of_pt = 4
+                number_of_pt = 3
                 CenterPt = (40+int((self.line_list[-1][0][0]+self.line_list[-1][-1][0])/2),int((self.line_list[-1][0][1]+self.line_list[-1][-1][1])/2))
                 interval_x_top_now = (CenterPt[0] - self.line_list[-1][0][0])/(number_of_pt)
                 interval_y_top_now = (CenterPt[1] - self.line_list[-1][0][1])/(number_of_pt)
@@ -611,7 +612,7 @@ class Detection(object):
                     self.Outer_Contour_InspectionPt[inspectionptcount][1] = (int(self.line_list[-1][0][0] + interval_x_top_now*j)
                                 , int(self.line_list[-1][0][1]+interval_y_top_now*j))
                     inspectionptcount+=1
-            print(inspectionptcount)
+            #print(inspectionptcount)
             #窗戶的直線
             if(len(ref_pt_v)!=0):               
                 for vpt in range(2): 
@@ -664,7 +665,7 @@ class Detection(object):
             self.NowScore = max(self.NowScore, self.__ComputeScore(temp_inspection))
             cv2.putText(new_image, "Score: {}".format(self.NowScore), (50, 50), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.1, (50, 255, 50), 1, cv2.LINE_AA)
     
-
+        
 
         return new_image, self.NowScore
 
