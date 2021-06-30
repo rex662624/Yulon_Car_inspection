@@ -62,11 +62,19 @@ class Ui_MainWindow(object):
         self.label_6.setFont(font)
         self.label_6.setObjectName("label_6")
         self.label_7 = QtWidgets.QLabel(self.centralwidget)
-        self.label_7.setGeometry(QtCore.QRect(0, 0, 1000, 750))
+        self.label_7.setGeometry(QtCore.QRect(0, 0, 1011, 771))
         self.label_7.setText("")
-        # notice
-        self.label_7.setPixmap(QtGui.QPixmap("resource/background.jpg"))
+        self.label_7.setPixmap(QtGui.QPixmap("../resource/background.jpg"))
         self.label_7.setObjectName("label_7")
+        self.label_8 = QtWidgets.QLabel(self.centralwidget)
+        self.label_8.setGeometry(QtCore.QRect(420, 650, 201, 41))
+        font = QtGui.QFont()
+        font.setFamily("微軟正黑體")
+        font.setPointSize(20)
+        font.setBold(True)
+        font.setWeight(75)
+        self.label_8.setFont(font)
+        self.label_8.setObjectName("label_8")
         self.label_7.raise_()
         self.label.raise_()
         self.label_2.raise_()
@@ -74,11 +82,11 @@ class Ui_MainWindow(object):
         self.label_4.raise_()
         self.label_5.raise_()
         self.label_6.raise_()
+        self.label_8.raise_()
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
 
     def showImage(self, img, label):
         height, width, channel = img.shape
@@ -87,6 +95,7 @@ class Ui_MainWindow(object):
         label.setPixmap(QtGui.QPixmap.fromImage(qImg))  
 
     def show_result(self, foldername,index):
+        _translate = QtCore.QCoreApplication.translate
         CarFolderName = foldername+'\\Car_{}'.format(index)
         front_img = cv2.imread(CarFolderName+'\\front_{}.jpg'.format(index),cv2.IMREAD_COLOR)
         back_img = cv2.imread(CarFolderName+'\\back_{}.jpg'.format(index),cv2.IMREAD_COLOR)       
@@ -97,6 +106,7 @@ class Ui_MainWindow(object):
         scorelist = log.read().split("\n")
         self.label_6.setText(QtCore.QCoreApplication.translate("MainWindow", "前門分數: {}/50".format(scorelist[0])))
         self.label_5.setText(QtCore.QCoreApplication.translate("MainWindow", "後門分數: {}/50".format(scorelist[1])))
+        self.label_8.setText(_translate("MainWindow", "總分{}/100".format(int(scorelist[0])+int(scorelist[1]))))
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -105,6 +115,7 @@ class Ui_MainWindow(object):
         self.label_2.setText(_translate("MainWindow", "後車門檢測圖"))
         self.label_5.setText(_translate("MainWindow", "分數"))
         self.label_6.setText(_translate("MainWindow", "分數"))
+        self.label_8.setText(_translate("MainWindow", "總分"))
 
 
 if __name__ == "__main__":

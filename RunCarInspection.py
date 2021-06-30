@@ -1,3 +1,11 @@
+#tensorflow
+import tensorflow as tf
+from keras import backend as K
+config = tf.ConfigProto()
+config.gpu_options.allow_growth=True
+sess = tf.Session(config=config)
+K.set_session(sess)
+
 # Build-in Lib
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import *
@@ -58,7 +66,10 @@ class Main(QMainWindow, mainui.Ui_MainWindow):
 
         # Open PLC
         #self.port = "COM4"
-        #self.ser = serial.Serial(port = self.port, baudrate = 115200, bytesize = serial.EIGHTBITS, parity = serial.PARITY_NONE, stopbits = serial.STOPBITS_ONE, timeout=2)
+        #self.ser = serial.Serial(port = self.port, baudrate = 115200, bytesize = serial.EIGHTBITS, parity = serial.PARITY_NONE, stopbits = serial.STOPBITS_ONE, timeout=0)
+
+                
+
 
     def __init_UI(self):
         super().__init__()
@@ -68,6 +79,7 @@ class Main(QMainWindow, mainui.Ui_MainWindow):
         self.pushButton_4.clicked.connect(self.StopDetectionButton)
         self.pushButton_5.clicked.connect(self.CloseButton)
         self.pushButton_6.clicked.connect(self.LogInRecord)
+        self.pushButton_9.clicked.connect(self.CarNumberModified)
         
         #pop out window UI
         self.SubWindow_Config = QtWidgets.QMainWindow()
@@ -79,7 +91,7 @@ class Main(QMainWindow, mainui.Ui_MainWindow):
         self.SubWindow_InspectionHistory_ui = InspectionHistoryui.Ui_MainWindow()
         self.SubWindow_InspectionHistory_ui.setupUi(self.SubWindow_InspectionHistory)
 
-        self.__init_log_button()
+        self.__init_log_button100()
 
         self.SubWindow_Account = QtWidgets.QMainWindow()
         self.Account_ui = Accountui.Ui_Form()
@@ -102,14 +114,29 @@ class Main(QMainWindow, mainui.Ui_MainWindow):
 
         #Set             
         #os.chmod(self.LogInFileName, S_IWRITE)
-
-    def __init_log_button(self):
-        button_list = [self.toolButton, self.toolButton_2, self.toolButton_3, self.toolButton_4, self.toolButton_5, self.toolButton_6, self.toolButton_7, self.toolButton_8, 
-                        self.toolButton_9, self.toolButton_10, self.toolButton_11, self.toolButton_12, self.toolButton_13, self.toolButton_14, self.toolButton_15, self.toolButton_16]
         
-        for i in range(len(button_list)):
-            #print(i)
-            button_list[i].clicked.connect(partial(self.__show_log, i))
+    def __init_log_button100(self):
+
+        #Log Button 100
+        self.Logbutton100 = []
+        for i in range(100):
+            self.Logbutton100.append(self.gridLayout.itemAtPosition(i//10, i%10).widget())
+
+        #self.Logbutton100 =         
+        # [
+        #     self.toolButton, self.toolButton_2, self.toolButton_3, self.toolButton_4, self.toolButton_5, 
+        #     self.toolButton_7, self.toolButton_8, self.toolButton_10, self.toolButton_9, self.toolButton_6, 
+        #     self.toolButton_16,self.toolButton_14,self.toolButton_12,self.toolButton_19,self.toolButton_20,
+        #     self.toolButton_17,self.toolButton_18,self.toolButton_11,self.toolButton_13,self.toolButton_15
+        #     ...    
+        # ]   
+
+        for i in range(len(self.Logbutton100)):
+            self.Logbutton100[i].clicked.connect(partial(self.__show_log, i))
+            self.__setButtonColor(self.Logbutton100[i], "white")
+        
+    def __setButtonColor(self, button, color):
+        button.setStyleSheet("background-color : {}".format(color))        
 
     def __init_subWindow(self):
         self.SubWindow_Config_ui.pushButton.clicked.connect(self.__save_config)
@@ -117,7 +144,7 @@ class Main(QMainWindow, mainui.Ui_MainWindow):
     def __show_log(self, index):
         #print(index)
         self.SubWindow_InspectionHistory.show()
-        self.SubWindow_InspectionHistory_ui.show_result(self.foldername, index)
+        self.SubWindow_InspectionHistory_ui.show_result(self.foldername, index, self.AlreadyInspection)
 
     def __show_account(self):
         self.SubWindow_Account.show()
@@ -136,12 +163,12 @@ class Main(QMainWindow, mainui.Ui_MainWindow):
 
 
     def __save_config(self):
-        self.Level1Lower = self.SubWindow_Config_ui.textEdit_2.toPlainText()
-        self.Level1Upper = self.SubWindow_Config_ui.textEdit_3.toPlainText()
-        self.Level2Lower = self.SubWindow_Config_ui.textEdit_6.toPlainText()
-        self.Level2Upper = self.SubWindow_Config_ui.textEdit_5.toPlainText()
-        self.Level3Lower = self.SubWindow_Config_ui.textEdit_4.toPlainText()
-        self.Level3Upper = self.SubWindow_Config_ui.textEdit.toPlainText()
+        self.Level1Lower = int(self.SubWindow_Config_ui.textEdit_2.toPlainText())
+        self.Level1Upper = int(self.SubWindow_Config_ui.textEdit_3.toPlainText())
+        self.Level2Lower = int(self.SubWindow_Config_ui.textEdit_6.toPlainText())
+        self.Level2Upper = int(self.SubWindow_Config_ui.textEdit_5.toPlainText())
+        self.Level3Lower = int(self.SubWindow_Config_ui.textEdit_4.toPlainText())
+        self.Level3Upper = int(self.SubWindow_Config_ui.textEdit.toPlainText())
         self.label_7.setText(QCoreApplication.translate("MainWindow", "{}分~{}分: {}輛".format(self.Level1Lower, self.Level1Upper, self.AlreadyInspection_Level1)))
         self.label_8.setText(QCoreApplication.translate("MainWindow", "{}分~{}分: {}輛".format(self.Level2Lower, self.Level2Upper, self.AlreadyInspection_Level2)))
         self.label_6.setText(QCoreApplication.translate("MainWindow", "{}分~{}分: {}輛".format(self.Level3Lower, self.Level3Upper, self.AlreadyInspection_Level3)))
@@ -149,7 +176,7 @@ class Main(QMainWindow, mainui.Ui_MainWindow):
     
         
     def __update_detection_time(self, now, star_time):
-        self.already_detection_time = int((now-star_time).total_seconds())
+        self.already_detection_time = int((now-star_time))#.total_seconds())
         self.label_14.setText(QCoreApplication.translate("MainWindow", "已檢測時間: "+str(self.already_detection_time)+"秒"))
 
 
@@ -159,9 +186,9 @@ class Main(QMainWindow, mainui.Ui_MainWindow):
         self.CommonThread.start()
 
     def __CommonFeature(self):
-        start_time = time.time() 
+        start_time = datetime.datetime.now()
         while(self.CommonThreadRunning):
-            now = time.time() 
+            now = datetime.datetime.now()
             if (now - start_time).seconds == 1:
                 start_time = now
                 self.global_time = now
@@ -180,30 +207,30 @@ class Main(QMainWindow, mainui.Ui_MainWindow):
 # serial.serialutil.SerialException: could not open port 'COM4': PermissionError(13, '存取被拒。', None, 5)
 
 
-
     def StartDetectButton(self):
-
-        value = 0
+        prevPLCvalue = 0
+        PLCvalue = 0
+        NewCarFlag = False
         initilize = 0
-        starttime = time.time()    
+        starttime = time.time()
  
         self.fourcc = cv2.VideoWriter_fourcc(*'MP4V')
         self.Save_video = cv2.VideoWriter(self.foldername+'\\Car_{}\\{}.mp4'.format(self.AlreadyInspection, self.AlreadyInspection), self.fourcc, 10.0, (821,  682))
-        #filelist = ['result\\Sample1.mp4', 'result\\Sample2.mp4', 'result\\Sample3.mp4', 'result\\Sample4.mp4', 'result\\Sample5.mp4']
-        filelist = ['video\\12.mp4','video\\Bug1.mp4''video\\4.mp4','video\\5.mp4','video\\6.mp4','video\\7.mp4','video\\8.mp4','video\\9.mp4','video\\2.mp4','video\\10.mp4'
-        , 'video\\12.mp4', 'result\\Sample3.mp4', 'result\\Sample4.mp4', 'result\\Sample5.mp4']        
-        # 1. 先上機測試，把Detection.py移到機器上，還有修改關掉程式時的行為。
-        # 2. 完成偵測到雙車輪時的布點，注意單車輪的布點還要調整
-        
         self.Detection = True
         index = 0
+        #=================Local Test=======================
+        filelist = ['video\\2.mp4','video\\1.mp4','video\\12.mp4', 'result\\Sample2.mp4']
         cap = cv2.VideoCapture(filelist[index])
-
+        #================
+        #==================Real Time========================
+        #cap = cv2.VideoCapture(0)
+        #================
         prev_frame_time = 0
         # used to record the time at which we processed current frame
         new_frame_time = 0
 
 
+        frame_count = 0
         #saved_status: 
         #   0: not save any image
         #   1: front door image saved
@@ -214,22 +241,33 @@ class Main(QMainWindow, mainui.Ui_MainWindow):
             # if(initilize == 0):
             #     starttime = self.global_time
             #     initilize = 1
+            
+            
             nowtime = time.time()
-            #print(nowtime-starttime)  
-            #self.__update_detection_time(self.global_time, starttime)
             new_frame_time = time.time()
-        
+            self.__update_detection_time(nowtime, starttime)
+
             fps = 1/(new_frame_time-prev_frame_time)
             prev_frame_time = new_frame_time
-            #print(fps)
+            print("FPS:", fps)
+
+            #==========Real Time===========
             # try:
-            #     value = int.from_bytes(self.ser.read(), "big")
+            #     prevPLCvalue = PLCvalue
+            #     PLCvalue = int.from_bytes(self.ser.read(100), "big")
+            #     #print(PLC_last_read, time.time())
+            #     #print("PLC: ",PLCvalue)
+            #     if(PLCvalue!=0):
+            #         print("{}: PLCValue != 0".format(nowtime))
+            #     if(PLCvalue!=0 and prevPLCvalue==0):
+            #         NewCarFlag = True
             # except:
-            #     value = 0
-            
+            #     NewCarFlag = False
+            #     print("Exception")            
             # cap = cv2.VideoCapture(0)
+
+            #==========Local Test===========
             ret, frame = cap.read()
-            
             if(ret==False):
                 index+=1
                 cap = cv2.VideoCapture(filelist[index])
@@ -238,58 +276,74 @@ class Main(QMainWindow, mainui.Ui_MainWindow):
             else:
                 value = 0
             frame = cv2.resize(frame, (821, 682))
-            
-            
+
+
+            #================================
+
             #detection
             result, Nowscore = self.Detector.detection_algorithm(frame.copy(), nowtime-starttime)
-
-            self.showImage(result)
-
-
-            self.Save_video.write(frame)
+            #result, Nowscore = frame.copy(), 0
+            #self.label_19.setText(QCoreApplication.translate("MainWindow", "目前車輛檢測分數: "+str(Nowscore)+" /100 分"))
             
+            #print(result)
+            self.showImage(result)
+            #self.Save_video.write(frame)
+
+            #=========local test button100==============
+            # import random
+            # Nowscore = random.randint(0, 100)
+            # frame_count+=1
+            # if(frame_count%10==0):
+            #     NewCarFlag = True
+
+            #==========================================
             #print(self.already_detection_time)
             if(self.already_detection_time == 25 and self.saved_status == 0):
                 self.saved_status = 1
                 print("Save Front Inspection Result")
                 self.__Save_Inspection_Result(frame,1)
+
             elif(self.already_detection_time == 40 and self.saved_status == 1):
                 self.saved_status = 0
                 print("Save Back Inspection Result")
                 self.__Save_Inspection_Result(frame,0)
             #elif(self.already_detection_time == 12):
-            if(value==1):
+            if(NewCarFlag==True):
+                NewCarFlag = False
                 self.already_detection_time = 0
                 self.saved_status = 0
 
                 print("******Car Detected: {}******".format(self.AlreadyInspection))
                 starttime = self.global_time
 
-                self.AlreadyInspection += 1
-                #self.Save_video = cv2.VideoWriter(self.foldername+'\\Car_{}\\{}.mp4'.format(self.AlreadyInspection, self.AlreadyInspection), self.fourcc, 10.0, (821,  682))
-                
-                #self.label_3.setText(_translate("MainWindow", "通過車輛: {}"format(self.AlreadyInspection)))
-                self.label_13.setText(QCoreApplication.translate("MainWindow", str(self.AlreadyInspection)))   
-
                 if(Nowscore>=self.Level1Lower and Nowscore<=self.Level1Upper):
                     self.AlreadyInspection_Level1 += 1
+                    self.__setButtonColor(self.Logbutton100[self.AlreadyInspection%100],"red")
                 elif(Nowscore>=self.Level2Lower and Nowscore<=self.Level2Upper):
                     self.AlreadyInspection_Level2 += 1
+                    self.__setButtonColor(self.Logbutton100[self.AlreadyInspection%100],"yellow")
                 elif(Nowscore>=self.Level3Lower and Nowscore<=self.Level3Upper):
                     self.AlreadyInspection_Level3 += 1
+                    self.__setButtonColor(self.Logbutton100[self.AlreadyInspection%100],"green")
 
                 self.label_7.setText(QCoreApplication.translate("MainWindow", "{}分~{}分: {}輛".format(self.Level1Lower, self.Level1Upper, self.AlreadyInspection_Level1)))
                 self.label_8.setText(QCoreApplication.translate("MainWindow", "{}分~{}分: {}輛".format(self.Level2Lower, self.Level2Upper, self.AlreadyInspection_Level2)))
                 self.label_6.setText(QCoreApplication.translate("MainWindow", "{}分~{}分: {}輛".format(self.Level3Lower, self.Level3Upper, self.AlreadyInspection_Level3)))
-                                
 
+
+                #save the result 
+                self.AlreadyInspection += 1
+                #self.label_3.setText(_translate("MainWindow", "通過車輛: {}".format(self.AlreadyInspection)))
+                self.label_13.setText(QCoreApplication.translate("MainWindow", str(self.AlreadyInspection)))   
                 self.Save_video.release()  
                 self.Save_video = cv2.VideoWriter(self.foldername+'\\Car_{}\\{}.mp4'.format(self.AlreadyInspection, self.AlreadyInspection), self.fourcc, 10.0, (821,  682))           
+
                 self.Detector.init_config()
+                starttime = time.time()
 
             
 
-            if cv2.waitKey(1) & 0xFF == ord('q') or ret==False :
+            if cv2.waitKey(0) & 0xFF == ord('q') or ret==False :
                 cap.release()
                 cv2.destroyAllWindows()
                 break
@@ -305,7 +359,7 @@ class Main(QMainWindow, mainui.Ui_MainWindow):
         #self.PLC_ReceiverThread.join()
         print("\tClose PLC Succeed...")
 
-        #self.CommonThreadRunning = False
+        self.CommonThreadRunning = False
         #self.CommonThread.join()
         print("\tClose Common Thread Succeed...")
 
@@ -314,7 +368,7 @@ class Main(QMainWindow, mainui.Ui_MainWindow):
     def __Save_Inspection_Result(self, frame, front):
         CarFolderName = self.foldername+'\\Car_{}'.format(self.AlreadyInspection)
         
-        print(self.global_time.strftime("%Y_%m_%d_%H_%M_%S"))
+        #print(self.global_time.strftime("%Y_%m_%d_%H_%M_%S"))
         
 
         if(front==1):
@@ -346,6 +400,13 @@ class Main(QMainWindow, mainui.Ui_MainWindow):
         print("LogInRecord")
         osCommandString = "notepad.exe {}".format(self.LogInFileName)
         os.system(osCommandString)
+
+    def CarNumberModified(self):
+        print("Modify Car number")
+        CarNumber = self.textEdit.toPlainText()
+        if(CarNumber!=""):
+            self.label_15.setText(QCoreApplication.translate("MainWindow", "現在車號: {}".format(CarNumber)))
+
 
 
 if __name__ == '__main__':

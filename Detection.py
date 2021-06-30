@@ -87,9 +87,9 @@ class Detection(object):
         #self.Window_Stright_Line = [[860, 0], [600, 682]] 
         self.Window_Stright_Line = [740, 350]
         #各個part的檢測點儲存:
-        self.Window_H_InspectionPt = [[False, (0,0), 0] for i in range(12)]
-        self.Window_V_InspectionPt = [[False, (0,0), 0] for i in range(10)]
-        self.Outer_Contour_InspectionPt = [[False, (0,0), 0] for i in range(25)]
+        self.Window_V_InspectionPt = [[False, (0,0), 0] for i in range(6)]
+        self.Window_H_InspectionPt = [[False, (0,0), 0] for i in range(6)]
+        self.Outer_Contour_InspectionPt = [[False, (0,0), 0] for i in range(24)]
         self.NowScore = 0
 
     def __bottom_line(self, x):
@@ -217,7 +217,7 @@ class Detection(object):
         
         
         now_centerX, now_centerY = 0, 0
-        # print(passtime)
+        #print("Time:", passtime)
         
         # if(passtime>=2 and self.Find_Front[0]==False):
         #     center_x = 698
@@ -326,9 +326,11 @@ class Detection(object):
                 # exit(0)
 
                 Start_Frame = Find_Wheel[3]
-                if((Find_Wheel[4]+self.frame_count-Start_Frame) < len(self.Golden)):
-                    Wheeloffsetx = self.Golden[Find_Wheel[4]+(self.frame_count-Start_Frame)][0] - GoldenX
-                    Wheeloffsety = self.Golden[Find_Wheel[4]+(self.frame_count-Start_Frame)][1] - GoldenY
+                Frame_Number_From_Start = self.frame_count-Start_Frame
+                Frame_Number_From_Start*=2
+                if((Find_Wheel[4]+Frame_Number_From_Start) < len(self.Golden)):
+                    Wheeloffsetx = self.Golden[Find_Wheel[4]+Frame_Number_From_Start][0] - GoldenX
+                    Wheeloffsety = self.Golden[Find_Wheel[4]+Frame_Number_From_Start][1] - GoldenY
                     
                     self.Find_Wheelx, self.Find_Wheely = Find_Wheel[1]+Wheeloffsetx, Find_Wheel[2]+Wheeloffsety
                     
@@ -415,7 +417,7 @@ class Detection(object):
                     # else:
                     #     self.line_list[i][0][1] = 300#280
                     #print(line_list[i])
-                    #cv2.line(new_image, tuple(line_list[i][0]),tuple(line_list[i][1]), (0,250,250),3)
+                    #cv2.line(new_image, tuple(self.line_list[i][0]),tuple(self.line_list[i][1]), (0,250,250),3)
                     line_min_expected = self.line_list[i][1][1]-140-80*i#line_list[i][1][1]-150-100*i
                     self.line_list[i][0][1] = max(line_min_expected, self.y_min)
                     
@@ -436,7 +438,8 @@ class Detection(object):
                     self.line_list[i][0][1] = self.y_min+10
                 else:
                     self.line_list[i][0][1] = self.y_min-10
-                cv2.line(new_image, tuple(self.line_list[i][0]),tuple(self.line_list[i][1]), (0,250,250),3)
+
+                #cv2.line(new_image, tuple(self.line_list[i][0]),tuple(self.line_list[i][1]), (0,250,250),3)
                 #cv2.circle(new_image, (int(self.x_max), int(self.Upper)), 6 ,(255, 255, 255), -1)
             
         #===============================分割前後窗戶和車門=================================
@@ -567,7 +570,7 @@ class Detection(object):
         if(self.Inspection_pt[1][0]==True):#從第二個column出現開始灑點
             #灑第一個column的直線
             if(self.Inspection_pt[0][0]==True):
-                number_of_pt = 4
+                number_of_pt = 3
                 interval_now = (self.line_list[i][1][1]-self.line_list[i][0][1])/(number_of_pt)
                 for j in range(number_of_pt):
                     #cv2.circle(new_image, (self.line_list[i][0][0], int(self.line_list[i][0][1]+interval_now*j)), 4 ,(150, 150, 150), -1)
@@ -612,30 +615,80 @@ class Detection(object):
                     self.Outer_Contour_InspectionPt[inspectionptcount][1] = (int(self.line_list[-1][0][0] + interval_x_top_now*j)
                                 , int(self.line_list[-1][0][1]+interval_y_top_now*j))
                     inspectionptcount+=1
+
             #print(inspectionptcount)
             #窗戶的直線
             if(len(ref_pt_v)!=0):               
                 for vpt in range(2): 
-                    number_of_pt = 6
+                    number_of_pt = 3
                     interval_x_top_now = (ref_pt_v[vpt][0] - inspectionpt[0])/(number_of_pt)
                     interval_y_top_now = (ref_pt_v[vpt][1] - inspectionpt[1])/(number_of_pt)
                     for j in range(number_of_pt):
                         # cv2.circle(new_image, (int(inspectionpt[0] + interval_x_top_now*j)
                         #             , int(inspectionpt[1] + interval_y_top_now*j)), 4 ,(150, 150, 150), -1)
-                        self.Window_H_InspectionPt[vpt*number_of_pt+j][1] = (int(inspectionpt[0] + interval_x_top_now*j),
+                        self.Window_V_InspectionPt[vpt*number_of_pt+j][1] = (int(inspectionpt[0] + interval_x_top_now*j),
                                                             int(inspectionpt[1] + interval_y_top_now*j))
 
 
             #窗戶的橫線
             if(self.ColCount>=4 and len(ref_pt_h)!=0):#第4個出來才有交點
-                number_of_pt = 4+3*(self.ColCount-4)
+                number_of_pt = 2+2*(self.ColCount-4)
                 interval_x_top_now = (ref_pt_h[1][0] - ref_pt_h[0][0] )/(number_of_pt)
                 interval_y_top_now = (ref_pt_h[1][1] - ref_pt_h[0][1] )/(number_of_pt)                
                 for j in range(number_of_pt):
                     # cv2.circle(new_image, (int(ref_pt_h[0][0] + interval_x_top_now*j)
                     #             , int(ref_pt_h[0][1] + interval_y_top_now*j)), 4 ,(150, 150, 150), -1)
-                    self.Window_V_InspectionPt[j][1] = (int(ref_pt_h[1][0] - interval_x_top_now*j), int(ref_pt_h[1][1] - interval_y_top_now*j))
-                    inspectionptcount+=1         
+                    self.Window_H_InspectionPt[j][1] = (int(ref_pt_h[1][0] - interval_x_top_now*j), int(ref_pt_h[1][1] - interval_y_top_now*j))
+
+
+            #前車窗空心的點
+            if(len(ref_pt_v)!=0):#和直線條件一樣，因為直線出來才能佈
+                    
+                    cv2.circle(new_image, self.Window_V_InspectionPt[5][1], 6, (0, 0, 0), -1)
+                    cv2.line(new_image, ((self.line_list[1][0][0]+self.line_list[2][0][0])//2,(self.line_list[1][0][1]+self.line_list[2][0][1])//2),
+                            ((self.line_list[1][1][0]+self.line_list[2][1][0])//2, (self.line_list[1][1][1]+self.line_list[2][1][1])//2),
+                            (0, 250, 250),3)
+                    #cv2.circle(new_image, self.Outer_Contour_InspectionPt[7][1], 6, (0, 0, 0), -1)                            
+
+                    #cv2.line(new_image, tuple(self.line_list[5][0]),tuple(self.line_list[5][1]), (0,250,250),3)
+                    #cv2.line(new_image, tuple(self.line_list[0][0]),tuple(self.line_list[0][1]), (0,250,250),3)
+                    #cv2.circle(new_image, self.Window_V_InspectionPt[1][1], 6, (0, 0, 0), -1)
+                    
+                    # 前車門
+                    x_interval = (self.Window_V_InspectionPt[1][1][0]-self.line_list[0][0][0])//4
+                    y_interval = (self.Window_V_InspectionPt[1][1][1]-self.line_list[0][0][1])//4
+                    # self.Window_V_InspectionPt[1][1][1]
+                    cv2.circle(new_image, (self.line_list[0][0][0]+x_interval, self.line_list[0][0][1]+y_interval), 4, (0, 0, 0), -1)
+                    cv2.circle(new_image, (self.line_list[0][0][0]+2*x_interval, self.line_list[0][0][1]+2*y_interval), 4, (0, 0, 0), -1)                            
+                    cv2.circle(new_image, (self.line_list[0][0][0]+3*x_interval, self.line_list[0][0][1]+3*y_interval), 4, (0, 0, 0), -1)                            
+                    cv2.circle(new_image, (int(self.line_list[0][0][0]+1.5*x_interval), int(self.line_list[0][0][1]+4*y_interval)), 4, (0, 0, 0), -1)
+                    cv2.circle(new_image, (int(self.line_list[0][0][0]+2.5*x_interval), int(self.line_list[0][0][1]+5*y_interval)), 4, (0, 0, 0), -1)
+                    cv2.circle(new_image, (int(self.line_list[0][0][0]+2*x_interval), int(self.line_list[0][0][1]+6*y_interval)), 4, (0, 0, 0), -1)
+
+                    #cv2.circle(new_image, (self.line_list[0][0][0]+4*x_interval, self.Window_V_InspectionPt[1][1][1]), 4, (0, 0, 0), -1)                            
+                    # 後車門
+                    cv2.circle(new_image, (self.Window_V_InspectionPt[1][1][0]+x_interval, self.Window_V_InspectionPt[1][1][1]), 4, (0, 0, 0), -1)
+                    cv2.circle(new_image, (self.Window_V_InspectionPt[1][1][0]+2*x_interval, self.Window_V_InspectionPt[1][1][1]+y_interval), 4, (0, 0, 0), -1)                            
+                    cv2.circle(new_image, (self.Window_V_InspectionPt[1][1][0]+3*x_interval, self.Window_V_InspectionPt[1][1][1]+2*y_interval), 4, (0, 0, 0), -1)                            
+                    cv2.circle(new_image, (int(self.Window_V_InspectionPt[1][1][0]+1.5*x_interval), int(self.Window_V_InspectionPt[1][1][1]+3*y_interval)), 4, (0, 0, 0), -1)
+                    cv2.circle(new_image, (int(self.Window_V_InspectionPt[1][1][0]+2.5*x_interval), int(self.Window_V_InspectionPt[1][1][1]+4*y_interval)), 4, (0, 0, 0), -1)
+                    cv2.circle(new_image, (int(self.Window_V_InspectionPt[1][1][0]+2*x_interval), int(self.Window_V_InspectionPt[1][1][1]+5*y_interval)), 4, (0, 0, 0), -1)
+                    
+                    #後車窗
+                    cv2.circle(new_image, (self.Window_V_InspectionPt[5][1][0]+x_interval, self.Window_V_InspectionPt[5][1][1]), 4, (255, 255, 255), -1)
+                    cv2.circle(new_image, (self.Window_V_InspectionPt[5][1][0]+2*x_interval, self.Window_V_InspectionPt[5][1][1]+y_interval), 4, (255, 255, 255), -1)                            
+                    cv2.circle(new_image, (self.Window_V_InspectionPt[5][1][0]+3*x_interval, self.Window_V_InspectionPt[5][1][1]+2*y_interval), 4, (255, 255, 255), -1)                            
+                    cv2.circle(new_image, (int(self.Window_V_InspectionPt[5][1][0]+1.5*x_interval), int(self.Window_V_InspectionPt[5][1][1]+3*y_interval)), 4, (255, 255, 255), -1)
+                    cv2.circle(new_image, (int(self.Window_V_InspectionPt[5][1][0]+2.5*x_interval), int(self.Window_V_InspectionPt[5][1][1]+4*y_interval)), 4, (255, 255, 255), -1)
+                    cv2.circle(new_image, (int(self.Window_V_InspectionPt[5][1][0]+2*x_interval), int(self.Window_V_InspectionPt[5][1][1]+5*y_interval)), 4, (255, 255, 255), -1)
+                    #
+                    cv2.circle(new_image, (int(self.Window_V_InspectionPt[5][1][0]-x_interval), self.Window_V_InspectionPt[5][1][1]-y_interval), 4, (255, 255, 255), -1)
+                    cv2.circle(new_image, (int(self.Window_V_InspectionPt[5][1][0]-2*x_interval), self.Window_V_InspectionPt[5][1][1]), 4, (255, 255, 255), -1)                            
+                    cv2.circle(new_image, (int(self.Window_V_InspectionPt[5][1][0]-2.5*x_interval), self.Window_V_InspectionPt[5][1][1]+y_interval), 4, (255, 255, 255), -1)                            
+                    cv2.circle(new_image, (int(self.Window_V_InspectionPt[5][1][0]-1.5*x_interval), int(self.Window_V_InspectionPt[5][1][1]+1.5*y_interval)), 4, (255, 255, 255), -1)
+                    cv2.circle(new_image, (int(self.Window_V_InspectionPt[5][1][0]-2.25*x_interval), int(self.Window_V_InspectionPt[5][1][1]+2*y_interval)), 4, (255, 255, 255), -1)
+                    cv2.circle(new_image, (int(self.Window_V_InspectionPt[5][1][0]-2*x_interval), int(self.Window_V_InspectionPt[5][1][1]+2.5*y_interval)), 4, (255, 255, 255), -1)
+
 
         #=======================================找操作員==============================================
         operator_offsety = 150
